@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f5f0eb;
+  --color-sand-200: #e8e0d8;
+  --color-sand-300: #d4c9bc;
+  --color-sand-400: #b8a999;
+  --color-sand-500: #9c8a78;
+  --color-sand-600: #7a6b5d;
+  --color-sand-700: #5c5045;
+  --color-sand-800: #3d352e;
+  --color-sand-900: #1f1b17;
+  --color-sand-950: #0f0d0b;
+
+  --color-amber-400: #d4a853;
+  --color-amber-500: #c4943d;
+  --color-amber-600: #a87a2f;
+
+  --color-slate-700: #374151;
+  --color-slate-800: #1e293b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-sand-950);
+  color: var(--color-sand-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-amber-400);
+  color: var(--color-sand-950);
+}
+
+/* Subtle grain texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
