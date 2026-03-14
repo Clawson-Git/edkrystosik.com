@@ -83,7 +83,7 @@ export default function About() {
                   <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
                     Based in
                   </p>
-                  <p className="text-base-800">Reno, NV</p>
+                  <p className="text-base-800">Reno, NV — Near Lake Tahoe & the Bay Area</p>
                 </div>
                 <div>
                   <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
