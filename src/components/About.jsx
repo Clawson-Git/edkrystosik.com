@@ -23,13 +23,13 @@ export default function About() {
     <section id="about" className="py-32 px-6">
       <div className="max-w-4xl mx-auto">
         <FadeIn>
-          <p className="font-mono text-amber-400 text-sm tracking-widest uppercase mb-4">
+          <p className="font-mono text-brand-500 text-sm tracking-widest uppercase mb-4">
             About
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-3xl md:text-4xl font-bold text-sand-50 mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-base-900 mb-8">
             Operator first. Always building.
           </h2>
         </FadeIn>
@@ -37,7 +37,7 @@ export default function About() {
         <div className="grid md:grid-cols-5 gap-12">
           <div className="md:col-span-3 space-y-6">
             <FadeIn delay={0.2}>
-              <p className="text-sand-300 leading-relaxed text-lg">
+              <p className="text-base-600 leading-relaxed text-lg">
                 I'm the kind of person who can't just advise on something without
                 building it myself first. I've spent years at the intersection of
                 deep technical work and business strategy, and that's where I do
@@ -46,60 +46,59 @@ export default function About() {
             </FadeIn>
 
             <FadeIn delay={0.3}>
-              <p className="text-sand-300 leading-relaxed text-lg">
-                Right now I'm focused on one thing: making AI transformation
-                audits accessible to independent consultants. The big firms
-                charge $200K+ for these engagements. I believe the best
-                consultants out there, the ones with real client relationships
-                and domain expertise, should be able to offer the same value at a
-                fraction of the cost.
+              <p className="text-base-600 leading-relaxed text-lg">
+                Right now I'm running multiple ventures across AI, biotech, and
+                nonprofit work. I co-founded Audity to bring AI-powered audits to
+                market. I advise businesses on AI transformation through RAC
+                Projects AI. I'm building Artana Bio at the frontier of
+                biotechnology. And I serve as Finance Director at the Med13
+                Foundation.
               </p>
             </FadeIn>
 
             <FadeIn delay={0.4}>
-              <p className="text-sand-300 leading-relaxed text-lg">
-                That's why I built Audity. And it's why I run AI audits myself,
-                for real clients, before I ever ask someone else to use the
-                platform. I don't sell tools I wouldn't use.
+              <p className="text-base-600 leading-relaxed text-lg">
+                The through line is the same: I build things that matter, I stay
+                hands-on, and I don't sell anything I wouldn't use myself.
               </p>
             </FadeIn>
           </div>
 
           <div className="md:col-span-2">
             <FadeIn delay={0.3}>
-              <div className="bg-sand-900/50 border border-sand-800/50 rounded-xl p-6 space-y-5">
+              <div className="bg-base-50 border border-base-200 rounded-xl p-6 space-y-5">
                 <div>
-                  <p className="font-mono text-xs text-sand-500 uppercase tracking-wider mb-1">
-                    Role
+                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
+                    Roles
                   </p>
-                  <p className="text-sand-200">CAIO at RAC Projects AI</p>
+                  <p className="text-base-800">Co-founder, Advisor, Operator</p>
                 </div>
                 <div>
-                  <p className="font-mono text-xs text-sand-500 uppercase tracking-wider mb-1">
-                    Building
+                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
+                    Ventures
                   </p>
-                  <p className="text-sand-200">Audity (auditynow.com)</p>
+                  <p className="text-base-800">Audity, RAC/AI, Artana Bio, Med13</p>
                 </div>
                 <div>
-                  <p className="font-mono text-xs text-sand-500 uppercase tracking-wider mb-1">
+                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
                     Based in
                   </p>
-                  <p className="text-sand-200">Reno, NV</p>
+                  <p className="text-base-800">Reno, NV</p>
                 </div>
                 <div>
-                  <p className="font-mono text-xs text-sand-500 uppercase tracking-wider mb-1">
-                    Focus
+                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
+                    Focus areas
                   </p>
-                  <p className="text-sand-200">
-                    AI transformation for consultants
+                  <p className="text-base-800">
+                    AI, biotech, business strategy
                   </p>
                 </div>
                 <div>
-                  <p className="font-mono text-xs text-sand-500 uppercase tracking-wider mb-1">
-                    Technical depth
+                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
+                    Expertise
                   </p>
-                  <p className="text-sand-200">
-                    SaaS, email infra, DNS, analytics, full-stack
+                  <p className="text-base-800">
+                    AI audits, transformation strategy, SaaS, go-to-market
                   </p>
                 </div>
               </div>

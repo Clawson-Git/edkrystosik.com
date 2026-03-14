@@ -23,31 +23,31 @@ const timeline = [
     title: "CAIO & Founder",
     org: "RAC Projects AI / Audity",
     description:
-      "Leading AI transformation strategy and building the SaaS platform that makes it scalable. Running client audits ($15K-$50K), building Audity's product, writing content, and running webinars. Hands-on across the full stack.",
-    skills: ["AI Strategy", "SaaS", "TypeScript", "Content", "Sales"],
+      "Running AI transformation audits for mid-market businesses ($15K-$50K engagements) and building the SaaS platform that lets other consultants do the same. Diagnosing operational bottlenecks, designing implementation roadmaps, and connecting clients with the right teams to execute.",
+    skills: ["AI Audits", "Consulting", "Go-to-Market", "Positioning"],
   },
   {
     period: "Previous",
     title: "Technical Operator",
     org: "Silicon Valley & Remote",
     description:
-      "Deep technical work across email infrastructure, DNS/SMTP systems, SaaS development, and analytics platforms. Built production systems, not just prototypes. The kind of engineering background where you understand what's happening at every layer.",
-    skills: ["Email Infra", "DNS/SMTP", "Full-Stack", "DevOps", "Analytics"],
+      "Built production systems across SaaS, infrastructure, and analytics. The technical foundation that makes it possible to audit a business end-to-end and know exactly where AI creates real leverage versus where it's just noise.",
+    skills: ["SaaS", "Infrastructure", "Analytics", "Systems Design"],
   },
   {
     period: "Foundation",
     title: "Builder's Mindset",
-    org: "Bay Area Network",
+    org: "Ohio → Chicago → Bay Area → Reno-Tahoe",
     description:
-      "Grew up in the Silicon Valley ecosystem. Friends at Meta and across the tech industry. But instead of joining a big company, chose the builder's path. That decision shaped everything that came after.",
-    skills: ["Engineering", "Product Thinking", "Self-Reliance"],
+      "Started in Ohio, spent a decade at JPMorgan in Chicago, then moved to the Bay Area and plugged into the Silicon Valley network. But instead of joining a big company, chose the builder's path. That decision shaped everything that came after.",
+    skills: ["First Principles", "Product Thinking", "Self-Reliance"],
   },
 ];
 
 const coreSkills = [
-  { category: "Business", items: ["AI Transformation Strategy", "Content Marketing", "Sales & Positioning", "Webinar Production"] },
-  { category: "Technical", items: ["TypeScript / Node.js", "Email Infrastructure & DNS", "SaaS Architecture", "PostHog Analytics"] },
-  { category: "Tools", items: ["Claude / AI Agents", "Vite / React", "Docker / PM2", "Sanity CMS"] },
+  { category: "Advisory", items: ["AI Transformation Strategy", "Audit Methodology & Delivery", "Go-to-Market & Positioning", "Client Engagement Design"] },
+  { category: "Consulting", items: ["Process Diagnosis & Optimization", "ROI Analysis & Business Cases", "Implementation Roadmap Design", "Change Management & Adoption"] },
+  { category: "Domain Expertise", items: ["AI/ML for Mid-Market & Enterprise", "SaaS Product Strategy", "Biotechnology Commercialization", "Nonprofit Financial Strategy"] },
 ];
 
 export default function Background() {
@@ -55,19 +55,19 @@ export default function Background() {
     <section id="background" className="py-32 px-6">
       <div className="max-w-4xl mx-auto">
         <FadeIn>
-          <p className="font-mono text-amber-400 text-sm tracking-widest uppercase mb-4">
+          <p className="font-mono text-brand-500 text-sm tracking-widest uppercase mb-4">
             Background
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-3xl md:text-4xl font-bold text-sand-50 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-base-900 mb-4">
             How I got here
           </h2>
         </FadeIn>
 
         <FadeIn delay={0.15}>
-          <p className="text-sand-400 text-lg mb-16 max-w-2xl">
+          <p className="text-base-500 text-lg mb-16 max-w-2xl">
             Not the traditional path. Technical enough to build it, strategic
             enough to know what's worth building.
           </p>
@@ -75,28 +75,28 @@ export default function Background() {
 
         {/* Timeline */}
         <div className="relative space-y-12 mb-24">
-          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-sand-800/50" />
+          <div className="absolute left-[7px] top-2 bottom-2 w-px bg-base-200" />
 
           {timeline.map((item, i) => (
             <FadeIn key={item.period} delay={0.2 + i * 0.1}>
               <div className="relative pl-10">
-                <div className="absolute left-0 top-2 w-[15px] h-[15px] rounded-full border-2 border-amber-400/60 bg-sand-950" />
+                <div className="absolute left-0 top-2 w-[15px] h-[15px] rounded-full border-2 border-brand-500 bg-base-white" />
 
-                <p className="font-mono text-xs text-amber-400/80 uppercase tracking-wider mb-1">
+                <p className="font-mono text-xs text-brand-500 uppercase tracking-wider mb-1">
                   {item.period}
                 </p>
-                <h3 className="text-xl font-bold text-sand-100 mb-1">
+                <h3 className="text-xl font-bold text-base-800 mb-1">
                   {item.title}
                 </h3>
-                <p className="text-sm text-sand-500 mb-3">{item.org}</p>
-                <p className="text-sand-400 leading-relaxed mb-4">
+                <p className="text-sm text-base-400 mb-3">{item.org}</p>
+                <p className="text-base-600 leading-relaxed mb-4">
                   {item.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {item.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1 text-xs font-mono text-sand-400 bg-sand-900/50 border border-sand-800/30 rounded-full"
+                      className="px-3 py-1 text-xs font-mono text-brand-700 bg-brand-50 border border-brand-100 rounded-full"
                     >
                       {skill}
                     </span>
@@ -109,7 +109,7 @@ export default function Background() {
 
         {/* Skills grid */}
         <FadeIn delay={0.2}>
-          <h3 className="text-xl font-bold text-sand-100 mb-8">
+          <h3 className="text-xl font-bold text-base-800 mb-8">
             Core skills
           </h3>
         </FadeIn>
@@ -117,13 +117,13 @@ export default function Background() {
         <div className="grid sm:grid-cols-3 gap-6">
           {coreSkills.map((group, i) => (
             <FadeIn key={group.category} delay={0.3 + i * 0.1}>
-              <div className="bg-sand-900/30 border border-sand-800/50 rounded-xl p-6">
-                <p className="font-mono text-xs text-amber-400/80 uppercase tracking-wider mb-4">
+              <div className="bg-base-50 border border-base-200 rounded-xl p-6">
+                <p className="font-mono text-xs text-brand-500 uppercase tracking-wider mb-4">
                   {group.category}
                 </p>
                 <ul className="space-y-2">
                   {group.items.map((item) => (
-                    <li key={item} className="text-sand-300 text-sm">
+                    <li key={item} className="text-base-600 text-sm">
                       {item}
                     </li>
                   ))}

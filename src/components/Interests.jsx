@@ -21,60 +21,60 @@ function FadeIn({ children, delay = 0 }) {
 const interests = [
   {
     icon: Mountain,
-    title: "Snow Sports",
+    title: "Outdoors",
     description:
-      "Living near Lake Tahoe means winter is the best season. Skiing and snowboarding are how I reset. Nothing clears your head like cold air and steep terrain.",
+      "Based near Lake Tahoe for a reason. Skiing, snowboarding, and time in the mountains are how I recharge.",
   },
   {
     icon: Dumbbell,
     title: "Fitness",
     description:
-      "Consistent training, not trends. The discipline of showing up every day carries over to everything else. Health-conscious approach that leans functional and sustainable.",
+      "Consistent training, functional movement, and a health-first lifestyle. The discipline carries over to everything else.",
   },
   {
     icon: UtensilsCrossed,
-    title: "Food",
+    title: "Food & Wellness",
     description:
-      "Serious about what I eat, but not in a restrictive way. Good food is one of the best parts of life. Always exploring new spots and cooking at home.",
+      "Serious about nutrition and natural health. Good food, holistic thinking, and a preventative approach to wellness.",
   },
   {
     icon: Plane,
     title: "Travel",
     description:
-      "Location independence isn't just a work strategy. Reno sits right between Tahoe and the Bay, with easy access to everywhere else. Built my life around mobility.",
+      "Built my life around mobility. Reno sits between Tahoe and the Bay, with easy access to everywhere else.",
   },
   {
     icon: Brain,
-    title: "Intellectual Curiosity",
+    title: "Curiosity",
     description:
-      "AI and functional programming for work, but the curiosity goes wider. VR, homeopathy, natural health, whatever catches my attention. Never stop learning.",
+      "AI and biotech for work, but the interests go wider. Always exploring new domains and going deep on whatever catches my attention.",
   },
   {
     icon: Heart,
     title: "Family",
     description:
-      "Close family relationships are non-negotiable. My brother Jeremy is also my business partner. My dad's 35+ years in natural medicine shaped how I think about health and wellness.",
+      "Close family relationships are non-negotiable. They keep everything else grounded.",
   },
 ];
 
 export default function Interests() {
   return (
-    <section id="interests" className="py-32 px-6">
+    <section id="interests" className="py-32 px-6 bg-base-50">
       <div className="max-w-4xl mx-auto">
         <FadeIn>
-          <p className="font-mono text-amber-400 text-sm tracking-widest uppercase mb-4">
+          <p className="font-mono text-brand-500 text-sm tracking-widest uppercase mb-4">
             Beyond Work
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-3xl md:text-4xl font-bold text-sand-50 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-base-900 mb-4">
             What else matters
           </h2>
         </FadeIn>
 
         <FadeIn delay={0.15}>
-          <p className="text-sand-400 text-lg mb-16 max-w-2xl">
+          <p className="text-base-500 text-lg mb-16 max-w-2xl">
             Building a business is a marathon, not a sprint. These are the
             things that keep the engine running.
           </p>
@@ -83,15 +83,15 @@ export default function Interests() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {interests.map((item, i) => (
             <FadeIn key={item.title} delay={0.2 + i * 0.05}>
-              <div className="group bg-sand-900/20 border border-sand-800/30 rounded-xl p-6 hover:border-sand-700/50 hover:bg-sand-900/40 transition-all duration-300 h-full">
+              <div className="group bg-base-white border border-base-200 rounded-xl p-6 hover:border-brand-300 hover:shadow-md transition-all duration-300 h-full">
                 <item.icon
                   size={24}
-                  className="text-amber-400/50 mb-4 group-hover:text-amber-400/80 transition-colors"
+                  className="text-brand-400 mb-4 group-hover:text-brand-500 transition-colors"
                 />
-                <h3 className="text-lg font-semibold text-sand-100 mb-2">
+                <h3 className="text-lg font-semibold text-base-800 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-sand-400 text-sm leading-relaxed">
+                <p className="text-base-500 text-sm leading-relaxed">
                   {item.description}
                 </p>
               </div>

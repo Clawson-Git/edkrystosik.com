@@ -2,5 +2,12 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"
+      - "8090:3001"
+    environment:
+      - NOTES_API_KEY=${NOTES_API_KEY}
+    volumes:
+      - notes-data:/data
     restart: unless-stopped
+
+volumes:
+  notes-data:

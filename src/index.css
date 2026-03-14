@@ -4,24 +4,30 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  --color-sand-50: #faf8f5;
-  --color-sand-100: #f5f0eb;
-  --color-sand-200: #e8e0d8;
-  --color-sand-300: #d4c9bc;
-  --color-sand-400: #b8a999;
-  --color-sand-500: #9c8a78;
-  --color-sand-600: #7a6b5d;
-  --color-sand-700: #5c5045;
-  --color-sand-800: #3d352e;
-  --color-sand-900: #1f1b17;
-  --color-sand-950: #0f0d0b;
+  /* Light palette — white + signature teal-green */
+  --color-base-white: #ffffff;
+  --color-base-50: #f7f7f7;
+  --color-base-100: #f0f0f0;
+  --color-base-200: #e5e5e5;
+  --color-base-300: #d4d4d4;
+  --color-base-400: #a3a3a3;
+  --color-base-500: #737373;
+  --color-base-600: #525252;
+  --color-base-700: #404040;
+  --color-base-800: #262626;
+  --color-base-900: #171717;
 
-  --color-amber-400: #d4a853;
-  --color-amber-500: #c4943d;
-  --color-amber-600: #a87a2f;
-
-  --color-slate-700: #374151;
-  --color-slate-800: #1e293b;
+  /* Signature green — pulled from edkrystosik.com */
+  --color-brand-50: #e6f7f3;
+  --color-brand-100: #b3e8db;
+  --color-brand-200: #80d9c3;
+  --color-brand-300: #4dcaab;
+  --color-brand-400: #1abb93;
+  --color-brand-500: #008f72;
+  --color-brand-600: #007a62;
+  --color-brand-700: #006552;
+  --color-brand-800: #005042;
+  --color-brand-900: #003b32;
 }
 
 html {
@@ -29,25 +35,14 @@ html {
 }
 
 body {
-  background-color: var(--color-sand-950);
-  color: var(--color-sand-100);
+  background-color: var(--color-base-white);
+  color: var(--color-base-800);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: var(--color-amber-400);
-  color: var(--color-sand-950);
-}
-
-/* Subtle grain texture overlay */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-color: var(--color-brand-500);
+  color: white;
 }
