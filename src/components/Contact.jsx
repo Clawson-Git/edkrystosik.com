@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Linkedin, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 function FadeIn({ children, delay = 0 }) {
   const ref = useRef(null);
@@ -17,15 +17,6 @@ function FadeIn({ children, delay = 0 }) {
     </motion.div>
   );
 }
-
-const links = [
-  {
-    icon: Linkedin,
-    label: "LinkedIn",
-    value: "Connect with me",
-    href: "https://linkedin.com/in/edkrystosik",
-  },
-];
 
 export default function Contact() {
   return (
@@ -50,38 +41,7 @@ export default function Contact() {
           </p>
         </FadeIn>
 
-        <div className="grid sm:grid-cols-1 max-w-sm gap-6 mb-16">
-          {links.map((link, i) => (
-            <FadeIn key={link.label} delay={0.2 + i * 0.1}>
-              <a
-                href={link.href}
-                target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="group flex items-start gap-4 bg-base-50 border border-base-200 rounded-xl p-6 hover:border-brand-300 hover:shadow-md transition-all duration-300"
-              >
-                <link.icon
-                  size={20}
-                  className="text-brand-400 mt-0.5 group-hover:text-brand-500 transition-colors"
-                />
-                <div className="flex-1">
-                  <p className="font-mono text-xs text-base-400 uppercase tracking-wider mb-1">
-                    {link.label}
-                  </p>
-                  <p className="text-base-700 group-hover:text-base-900 transition-colors">
-                    {link.value}
-                  </p>
-                </div>
-                <ArrowUpRight
-                  size={16}
-                  className="text-base-300 group-hover:text-brand-500 transition-colors mt-1"
-                />
-              </a>
-            </FadeIn>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <FadeIn delay={0.4}>
+        <FadeIn delay={0.2}>
           <div className="bg-brand-500 rounded-2xl p-8 md:p-12 text-center">
             <h3 className="text-2xl font-bold text-white mb-3">
               Interested in working together?
@@ -92,7 +52,7 @@ export default function Contact() {
               the conversation goes.
             </p>
             <a
-              href="https://linkedin.com/in/edkrystosik"
+              href="https://www.linkedin.com/in/ed-krystosik/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white text-brand-700 font-semibold rounded-lg hover:bg-brand-50 transition-colors"
