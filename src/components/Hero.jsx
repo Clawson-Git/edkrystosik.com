@@ -42,7 +42,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="font-mono text-sm text-base-400 mb-12"
         >
-          Reno, NV &mdash; Near Lake Tahoe & the Bay
+          Reno, NV &mdash; Near Lake Tahoe & the Bay Area
         </motion.p>
 
         <motion.div
