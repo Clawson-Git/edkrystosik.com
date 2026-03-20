@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { marked } from "marked";
 
 function formatDate(iso) {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
@@ -41,7 +42,7 @@ export default function NoteDetail() {
   }
 
   // Content is authored by Ed via the secured API (not user-generated)
-  const contentHtml = { __html: note.content };
+  const contentHtml = { __html: marked.parse(note.content) };
 
   return (
     <section className="pt-32 pb-24 px-6 min-h-screen">
