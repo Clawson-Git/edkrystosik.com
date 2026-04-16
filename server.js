@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import Database from "better-sqlite3";
 import crypto from "crypto";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -35,6 +36,90 @@ db.exec(`
   )
 `);
 
+// --- Read the built index.html once at startup ---
+
+const indexHtmlPath = join(__dirname, "dist", "index.html");
+let INDEX_HTML_TEMPLATE = "";
+try {
+  INDEX_HTML_TEMPLATE = fs.readFileSync(indexHtmlPath, "utf-8");
+} catch {
+  console.warn("dist/index.html not found - meta injection disabled until build");
+}
+
+// --- HTML escape helper ---
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
+// --- Safe JSON-LD serializer (prevents </script> breakout) ---
+
+function safeJsonLd(obj) {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
+// --- Meta tag injection helper ---
+
+function injectMeta(html, meta) {
+  // Use replacer functions (not replacement strings) to avoid $& pattern issues
+  html = html.replace(
+    /<title>[^<]*<\/title>/,
+    () => `<title>${escapeHtml(meta.title)}</title>`
+  );
+
+  html = html.replace(
+    /<meta name="description" content="[^"]*"\s*\/?>/,
+    () => `<meta name="description" content="${escapeHtml(meta.description)}" />`
+  );
+
+  const tags = [];
+
+  if (meta.canonical) {
+    tags.push(`<link rel="canonical" href="${escapeHtml(meta.canonical)}" />`);
+  }
+
+  // Open Graph
+  if (meta.ogTitle) {
+    tags.push(`<meta property="og:title" content="${escapeHtml(meta.ogTitle)}" />`);
+  }
+  if (meta.ogDescription) {
+    tags.push(`<meta property="og:description" content="${escapeHtml(meta.ogDescription)}" />`);
+  }
+  if (meta.ogUrl) {
+    tags.push(`<meta property="og:url" content="${escapeHtml(meta.ogUrl)}" />`);
+  }
+  if (meta.ogType) {
+    tags.push(`<meta property="og:type" content="${escapeHtml(meta.ogType)}" />`);
+  }
+  tags.push(`<meta property="og:site_name" content="Ed Krystosik" />`);
+
+  // Twitter Card
+  tags.push(`<meta name="twitter:card" content="summary" />`);
+  if (meta.ogTitle) {
+    tags.push(`<meta name="twitter:title" content="${escapeHtml(meta.ogTitle)}" />`);
+  }
+  if (meta.ogDescription) {
+    tags.push(`<meta name="twitter:description" content="${escapeHtml(meta.ogDescription)}" />`);
+  }
+
+  // JSON-LD (uses safeJsonLd to prevent </script> breakout)
+  if (meta.jsonLd) {
+    tags.push(`<script type="application/ld+json">${safeJsonLd(meta.jsonLd)}</script>`);
+  }
+
+  if (tags.length > 0) {
+    html = html.replace("</head>", () => `    ${tags.join("\n    ")}\n  </head>`);
+  }
+
+  return html;
+}
+
 // --- Middleware ---
 
 app.use(cors());
@@ -52,7 +137,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// --- Public routes ---
+// --- Public API routes ---
 
 app.get("/api/notes", (_req, res) => {
   const notes = db
@@ -151,9 +236,167 @@ app.delete("/api/notes/:slug", requireAuth, (req, res) => {
   res.json({ deleted: true });
 });
 
+// --- Sitemap ---
+
+app.get("/sitemap.xml", (_req, res) => {
+  const notes = db
+    .prepare("SELECT slug, updated_at, date FROM notes ORDER BY date DESC")
+    .all();
+
+  const urls = [
+    `  <url>
+    <loc>https://edkrystosik.com/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>`,
+    `  <url>
+    <loc>https://edkrystosik.com/notes</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`,
+    ...notes.map((n) => {
+      const lastmod = (n.updated_at || n.date || "").split("T")[0];
+      const encodedSlug = encodeURIComponent(n.slug).replace(/%2F/g, "/");
+      return `  <url>
+    <loc>https://edkrystosik.com/notes/${encodedSlug}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ""}
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+    }),
+  ];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join("\n")}
+</urlset>`;
+
+  res.set("Content-Type", "application/xml");
+  res.send(xml);
+});
+
+// --- SEO meta injection routes (before static files + SPA catch-all) ---
+
+// Homepage: /
+app.get("/", (_req, res) => {
+  if (!INDEX_HTML_TEMPLATE) {
+    return res.sendFile(indexHtmlPath);
+  }
+
+  const html = injectMeta(INDEX_HTML_TEMPLATE, {
+    title: "Ed Krystosik \u2014 CAIO, Founder, Builder",
+    description:
+      "Ed Krystosik \u2014 CAIO at RAC Projects AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+    canonical: "https://edkrystosik.com",
+    ogTitle: "Ed Krystosik",
+    ogDescription:
+      "CAIO at RAC Projects AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+    ogUrl: "https://edkrystosik.com",
+    ogType: "website",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Ed Krystosik",
+      url: "https://edkrystosik.com",
+      description:
+        "CAIO at RAC Projects AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+      author: {
+        "@type": "Person",
+        name: "Ed Krystosik",
+        url: "https://edkrystosik.com",
+      },
+    },
+  });
+
+  res.send(html);
+});
+
+// Blog post: /notes/:slug
+app.get("/notes/:slug", (req, res) => {
+  if (!INDEX_HTML_TEMPLATE) {
+    return res.sendFile(indexHtmlPath);
+  }
+
+  const note = db
+    .prepare("SELECT slug, title, date, summary FROM notes WHERE slug = ?")
+    .get(req.params.slug);
+
+  // Not found in DB - send the SPA shell (React handles the 404 redirect)
+  if (!note) {
+    return res.send(INDEX_HTML_TEMPLATE);
+  }
+
+  const url = `https://edkrystosik.com/notes/${note.slug}`;
+
+  const html = injectMeta(INDEX_HTML_TEMPLATE, {
+    title: `${note.title} | Ed Krystosik`,
+    description: note.summary,
+    canonical: url,
+    ogTitle: note.title,
+    ogDescription: note.summary,
+    ogUrl: url,
+    ogType: "article",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: note.title,
+      description: note.summary,
+      datePublished: note.date,
+      url: url,
+      author: {
+        "@type": "Person",
+        name: "Ed Krystosik",
+        url: "https://edkrystosik.com",
+      },
+      publisher: {
+        "@type": "Person",
+        name: "Ed Krystosik",
+        url: "https://edkrystosik.com",
+      },
+    },
+  });
+
+  res.send(html);
+});
+
+// Blog index: /notes
+app.get("/notes", (_req, res) => {
+  if (!INDEX_HTML_TEMPLATE) {
+    return res.sendFile(indexHtmlPath);
+  }
+
+  const html = injectMeta(INDEX_HTML_TEMPLATE, {
+    title: "Notes | Ed Krystosik",
+    description:
+      "Thoughts on building, AI strategy, and consulting. Working notes from Ed Krystosik.",
+    canonical: "https://edkrystosik.com/notes",
+    ogTitle: "Notes | Ed Krystosik",
+    ogDescription:
+      "Thoughts on building, AI strategy, and consulting. Working notes from Ed Krystosik.",
+    ogUrl: "https://edkrystosik.com/notes",
+    ogType: "website",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Notes",
+      description:
+        "Thoughts on building, AI strategy, and consulting. Working notes from Ed Krystosik.",
+      url: "https://edkrystosik.com/notes",
+      author: {
+        "@type": "Person",
+        name: "Ed Krystosik",
+        url: "https://edkrystosik.com",
+      },
+    },
+  });
+
+  res.send(html);
+});
+
 // --- Static files (production) ---
 
 app.use(express.static(join(__dirname, "dist")));
+
+// SPA catch-all (all other routes)
 app.get("/{*splat}", (_req, res) => {
   res.sendFile(join(__dirname, "dist", "index.html"));
 });

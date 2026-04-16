@@ -23,6 +23,17 @@ export default function Notes() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    document.title = "Notes | Ed Krystosik";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", "Thoughts on building, AI strategy, and consulting. Working notes from Ed Krystosik.");
+    return () => {
+      document.title = "Ed Krystosik — CAIO, Founder, Builder";
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute("content", "Ed Krystosik — CAIO at RAC Projects AI, founder of Audity. Helping consultants add AI transformation audits to their practice.");
+    };
+  }, []);
+
   return (
     <section className="pt-32 pb-24 px-6 min-h-screen">
       <div className="max-w-3xl mx-auto">
