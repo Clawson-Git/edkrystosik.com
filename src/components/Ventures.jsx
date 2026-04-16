@@ -33,7 +33,7 @@ const ventures = [
     ],
   },
   {
-    name: "RAC Projects AI",
+    name: "RAC/AI",
     url: null,
     role: "CAIO",
     tagline: "AI transformation consulting & advisory",

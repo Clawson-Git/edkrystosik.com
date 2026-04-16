@@ -21,7 +21,7 @@ const timeline = [
   {
     period: "Now",
     title: "CAIO & Founder",
-    org: "RAC Projects AI / Audity",
+    org: "RAC/AI / Audity",
     description:
       "Running AI transformation audits for mid-market businesses ($15K-$50K engagements) and building the SaaS platform that lets other consultants do the same. Diagnosing operational bottlenecks, designing implementation roadmaps, and connecting clients with the right teams to execute.",
     skills: ["AI Audits", "Consulting", "Go-to-Market", "Positioning"],

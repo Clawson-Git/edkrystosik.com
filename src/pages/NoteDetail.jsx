@@ -38,7 +38,7 @@ export default function NoteDetail() {
     return () => {
       document.title = "Ed Krystosik — CAIO, Founder, Builder";
       const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", "Ed Krystosik — CAIO at RAC Projects AI, founder of Audity. Helping consultants add AI transformation audits to their practice.");
+      if (metaDesc) metaDesc.setAttribute("content", "Ed Krystosik — CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.");
     };
   }, [note]);
 
