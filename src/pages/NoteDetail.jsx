@@ -3,6 +3,7 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { marked } from "marked";
+import NewsletterCTA from "../components/NewsletterCTA";
 
 function formatDate(iso) {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
@@ -103,6 +104,8 @@ export default function NoteDetail() {
               [&_blockquote]:border-l-4 [&_blockquote]:border-brand-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-base-500"
             dangerouslySetInnerHTML={contentHtml}
           />
+
+          <NewsletterCTA />
         </motion.div>
       </div>
     </section>
