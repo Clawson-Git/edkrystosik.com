@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import compression from "compression";
+import helmet from "helmet";
 import Database from "better-sqlite3";
 import crypto from "crypto";
 import fs from "fs";
@@ -15,6 +17,9 @@ if (!API_KEY) {
   console.error("NOTES_API_KEY environment variable is required");
   process.exit(1);
 }
+
+app.disable("x-powered-by");
+app.set("etag", "strong");
 
 // --- Database setup ---
 
@@ -46,7 +51,7 @@ try {
   console.warn("dist/index.html not found - meta injection disabled until build");
 }
 
-// --- HTML escape helper ---
+// --- Helpers ---
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -58,16 +63,13 @@ function escapeHtml(str) {
     .replace(/'/g, "&#x27;");
 }
 
-// --- Safe JSON-LD serializer (prevents </script> breakout) ---
-
 function safeJsonLd(obj) {
   return JSON.stringify(obj).replace(/</g, "\\u003c");
 }
 
-// --- Meta tag injection helper ---
+const DEFAULT_OG_IMAGE = "https://edkrystosik.com/og-image.png";
 
 function injectMeta(html, meta) {
-  // Use replacer functions (not replacement strings) to avoid $& pattern issues
   html = html.replace(
     /<title>[^<]*<\/title>/,
     () => `<title>${escapeHtml(meta.title)}</title>`
@@ -84,6 +86,10 @@ function injectMeta(html, meta) {
     tags.push(`<link rel="canonical" href="${escapeHtml(meta.canonical)}" />`);
   }
 
+  if (meta.robots) {
+    tags.push(`<meta name="robots" content="${escapeHtml(meta.robots)}" />`);
+  }
+
   // Open Graph
   if (meta.ogTitle) {
     tags.push(`<meta property="og:title" content="${escapeHtml(meta.ogTitle)}" />`);
@@ -97,18 +103,23 @@ function injectMeta(html, meta) {
   if (meta.ogType) {
     tags.push(`<meta property="og:type" content="${escapeHtml(meta.ogType)}" />`);
   }
+  const ogImage = meta.ogImage || DEFAULT_OG_IMAGE;
+  tags.push(`<meta property="og:image" content="${escapeHtml(ogImage)}" />`);
+  tags.push(`<meta property="og:image:width" content="1200" />`);
+  tags.push(`<meta property="og:image:height" content="630" />`);
+  tags.push(`<meta property="og:image:alt" content="${escapeHtml(meta.ogTitle || meta.title || "Ed Krystosik")}" />`);
   tags.push(`<meta property="og:site_name" content="Ed Krystosik" />`);
 
   // Twitter Card
-  tags.push(`<meta name="twitter:card" content="summary" />`);
+  tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
   if (meta.ogTitle) {
     tags.push(`<meta name="twitter:title" content="${escapeHtml(meta.ogTitle)}" />`);
   }
   if (meta.ogDescription) {
     tags.push(`<meta name="twitter:description" content="${escapeHtml(meta.ogDescription)}" />`);
   }
+  tags.push(`<meta name="twitter:image" content="${escapeHtml(ogImage)}" />`);
 
-  // JSON-LD (uses safeJsonLd to prevent </script> breakout)
   if (meta.jsonLd) {
     tags.push(`<script type="application/ld+json">${safeJsonLd(meta.jsonLd)}</script>`);
   }
@@ -120,7 +131,41 @@ function injectMeta(html, meta) {
   return html;
 }
 
+function renderNotFound() {
+  if (!INDEX_HTML_TEMPLATE) return "<!doctype html><title>404</title><h1>Not found</h1>";
+  return injectMeta(INDEX_HTML_TEMPLATE, {
+    title: "404 — Not found | Ed Krystosik",
+    description: "The page you were looking for does not exist.",
+    robots: "noindex, follow",
+    ogTitle: "404 — Not found",
+    ogDescription: "The page you were looking for does not exist.",
+    ogType: "website",
+  });
+}
+
 // --- Middleware ---
+
+// 1. Apex host redirect (www -> apex). Done before anything else so cached hits still get 301'd.
+app.use((req, res, next) => {
+  const host = req.headers.host || "";
+  if (host.toLowerCase().startsWith("www.")) {
+    const target = `https://${host.slice(4)}${req.originalUrl}`;
+    return res.redirect(301, target);
+  }
+  next();
+});
+
+// 2. Security headers. Loose CSP because Google Fonts + inline JSON-LD + the React bundle.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+// 3. Compression for HTML/JSON/JS/CSS. Skips already-compressed binaries.
+app.use(compression());
 
 app.use(cors());
 app.use(express.json());
@@ -131,7 +176,9 @@ function requireAuth(req, res, next) {
     return res.status(401).json({ error: "Missing authorization header" });
   }
   const token = header.slice(7);
-  if (!crypto.timingSafeEqual(Buffer.from(token), Buffer.from(API_KEY))) {
+  const tokenBuf = Buffer.from(token);
+  const keyBuf = Buffer.from(API_KEY);
+  if (tokenBuf.length !== keyBuf.length || !crypto.timingSafeEqual(tokenBuf, keyBuf)) {
     return res.status(403).json({ error: "Invalid API key" });
   }
   next();
@@ -150,9 +197,8 @@ app.get("/api/notes", (_req, res) => {
 });
 
 app.get("/api/notes/:slug", (req, res) => {
-  const note = db
-    .prepare("SELECT * FROM notes WHERE slug = ?")
-    .get(req.params.slug);
+  const slug = req.params.slug.toLowerCase();
+  const note = db.prepare("SELECT * FROM notes WHERE slug = ?").get(slug);
   if (!note) return res.status(404).json({ error: "Note not found" });
   res.json({ ...note, tags: JSON.parse(note.tags) });
 });
@@ -197,9 +243,8 @@ app.post("/api/notes", requireAuth, (req, res) => {
 });
 
 app.put("/api/notes/:slug", requireAuth, (req, res) => {
-  const existing = db
-    .prepare("SELECT * FROM notes WHERE slug = ?")
-    .get(req.params.slug);
+  const slug = req.params.slug.toLowerCase();
+  const existing = db.prepare("SELECT * FROM notes WHERE slug = ?").get(slug);
   if (!existing) return res.status(404).json({ error: "Note not found" });
 
   const { title, date, tags, summary, content } = req.body;
@@ -218,19 +263,16 @@ app.put("/api/notes/:slug", requireAuth, (req, res) => {
     tags ? JSON.stringify(tags) : null,
     summary || null,
     content || null,
-    req.params.slug
+    slug
   );
 
-  const note = db
-    .prepare("SELECT * FROM notes WHERE slug = ?")
-    .get(req.params.slug);
+  const note = db.prepare("SELECT * FROM notes WHERE slug = ?").get(slug);
   res.json({ ...note, tags: JSON.parse(note.tags) });
 });
 
 app.delete("/api/notes/:slug", requireAuth, (req, res) => {
-  const result = db
-    .prepare("DELETE FROM notes WHERE slug = ?")
-    .run(req.params.slug);
+  const slug = req.params.slug.toLowerCase();
+  const result = db.prepare("DELETE FROM notes WHERE slug = ?").run(slug);
   if (result.changes === 0)
     return res.status(404).json({ error: "Note not found" });
   res.json({ deleted: true });
@@ -283,26 +325,36 @@ app.get("/", (_req, res) => {
   }
 
   const html = injectMeta(INDEX_HTML_TEMPLATE, {
-    title: "Ed Krystosik \u2014 CAIO, Founder, Builder",
+    title: "Ed Krystosik — CAIO, Founder, Builder",
     description:
-      "Ed Krystosik \u2014 CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
-    canonical: "https://edkrystosik.com",
+      "Ed Krystosik — CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+    canonical: "https://edkrystosik.com/",
     ogTitle: "Ed Krystosik",
     ogDescription:
       "CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
-    ogUrl: "https://edkrystosik.com",
+    ogUrl: "https://edkrystosik.com/",
     ogType: "website",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: "Ed Krystosik",
-      url: "https://edkrystosik.com",
+      url: "https://edkrystosik.com/",
       description:
         "CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
       author: {
         "@type": "Person",
         name: "Ed Krystosik",
-        url: "https://edkrystosik.com",
+        url: "https://edkrystosik.com/",
+        jobTitle: "Chief AI Officer",
+        worksFor: [
+          { "@type": "Organization", name: "RAC/AI", url: "https://racprojects.ai/" },
+          { "@type": "Organization", name: "Audity", url: "https://auditynow.com/" },
+        ],
+        sameAs: [
+          "https://www.linkedin.com/in/edkrystosik/",
+          "https://racprojects.ai/",
+          "https://auditynow.com/",
+        ],
       },
     },
   });
@@ -311,18 +363,26 @@ app.get("/", (_req, res) => {
 });
 
 // Blog post: /notes/:slug
-app.get("/notes/:slug", (req, res) => {
+app.get("/notes/:rawSlug", (req, res) => {
   if (!INDEX_HTML_TEMPLATE) {
     return res.sendFile(indexHtmlPath);
   }
 
+  const rawSlug = req.params.rawSlug;
+  const slug = rawSlug.toLowerCase();
+
+  // Mixed-case access: 301 to canonical lowercase URL.
+  if (rawSlug !== slug) {
+    return res.redirect(301, `/notes/${slug}`);
+  }
+
   const note = db
     .prepare("SELECT slug, title, date, summary FROM notes WHERE slug = ?")
-    .get(req.params.slug);
+    .get(slug);
 
-  // Not found in DB - send the SPA shell (React handles the 404 redirect)
   if (!note) {
-    return res.send(INDEX_HTML_TEMPLATE);
+    res.status(404).set("Cache-Control", "no-store").send(renderNotFound());
+    return;
   }
 
   const url = `https://edkrystosik.com/notes/${note.slug}`;
@@ -342,15 +402,22 @@ app.get("/notes/:slug", (req, res) => {
       description: note.summary,
       datePublished: note.date,
       url: url,
+      image: DEFAULT_OG_IMAGE,
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
       author: {
         "@type": "Person",
         name: "Ed Krystosik",
-        url: "https://edkrystosik.com",
+        url: "https://edkrystosik.com/",
+        sameAs: [
+          "https://www.linkedin.com/in/edkrystosik/",
+          "https://racprojects.ai/",
+          "https://auditynow.com/",
+        ],
       },
       publisher: {
         "@type": "Person",
         name: "Ed Krystosik",
-        url: "https://edkrystosik.com",
+        url: "https://edkrystosik.com/",
       },
     },
   });
@@ -384,7 +451,7 @@ app.get("/notes", (_req, res) => {
       author: {
         "@type": "Person",
         name: "Ed Krystosik",
-        url: "https://edkrystosik.com",
+        url: "https://edkrystosik.com/",
       },
     },
   });
@@ -393,12 +460,31 @@ app.get("/notes", (_req, res) => {
 });
 
 // --- Static files (production) ---
+// Hashed Vite assets get a long immutable cache. Everything else is short.
 
-app.use(express.static(join(__dirname, "dist")));
+app.use(
+  "/assets",
+  express.static(join(__dirname, "dist", "assets"), {
+    immutable: true,
+    maxAge: "1y",
+  })
+);
 
-// SPA catch-all (all other routes)
+app.use(
+  express.static(join(__dirname, "dist"), {
+    maxAge: "1h",
+    setHeaders(res, path) {
+      if (path.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  })
+);
+
+// SPA catch-all: only serve the SPA for routes that look like real client routes.
+// Anything else is a true 404 (no soft-404 with HTTP 200).
 app.get("/{*splat}", (_req, res) => {
-  res.sendFile(join(__dirname, "dist", "index.html"));
+  res.status(404).set("Cache-Control", "no-store").send(renderNotFound());
 });
 
 // --- Start ---
