@@ -48,11 +48,11 @@ export default function About() {
             <FadeIn delay={0.3}>
               <p className="text-base-600 leading-relaxed text-lg">
                 Right now I'm running multiple ventures across AI, biotech, and
-                nonprofit work. I co-founded Audity to bring AI-powered audits to
-                market. I advise businesses on AI transformation through RAC/AI.
-                I'm building Artana Bio at the frontier of
-                biotechnology. And I serve as Finance Director at the Med13
-                Foundation.
+                nonprofit work. I co-founded Audity, the operating system for
+                boutique AI consulting firms running multi-seat client work. I
+                advise businesses on AI transformation through RAC/AI. I'm
+                building Artana Bio at the frontier of biotechnology. And I
+                serve as Finance Director at the Med13 Foundation.
               </p>
             </FadeIn>
 

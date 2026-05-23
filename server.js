@@ -327,11 +327,11 @@ app.get("/", (_req, res) => {
   const html = injectMeta(INDEX_HTML_TEMPLATE, {
     title: "Ed Krystosik — CAIO, Founder, Builder",
     description:
-      "Ed Krystosik — CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+      "Ed Krystosik — CAIO at RAC/AI, co-founder of Audity, the operating system for boutique AI consulting firms.",
     canonical: "https://edkrystosik.com/",
     ogTitle: "Ed Krystosik",
     ogDescription:
-      "CAIO at RAC/AI, founder of Audity. Helping consultants add AI transformation audits to their practice.",
+      "CAIO at RAC/AI, co-founder of Audity, the operating system for boutique AI consulting firms.",
     ogUrl: "https://edkrystosik.com/",
     ogType: "website",
     jsonLd: {

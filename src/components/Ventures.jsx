@@ -21,15 +21,15 @@ function FadeIn({ children, delay = 0 }) {
 const ventures = [
   {
     name: "Audity",
-    url: "https://auditynow.com",
+    url: "https://auditynow.com/audity-teams",
     role: "Co-Founder",
-    tagline: "AI-powered audit platform",
+    tagline: "The operating system for boutique AI consulting firms",
     description:
-      "SaaS that turns 40+ hour manual AI transformation audits into ~15 hour engagements. Built for management, IT, and business strategy consultants who want to add high-value AI audit services to their practice without building the methodology from scratch.",
+      "SaaS built for boutique AI consulting firms (3-25 people) running client work as a team. Audity removes the capacity ceiling that caps most firms at 6-8 audits a year, so partners, principals, and practice leads can scale advisory engagements without scaling headcount.",
     stats: [
+      { icon: Users, label: "Built for", value: "Boutique AI consulting firms" },
       { icon: Cpu, label: "Audit automation", value: "60%+ time saved" },
-      { icon: Users, label: "Target clients", value: "Independent consultants" },
-      { icon: BarChart3, label: "Engagement type", value: "High-value advisory" },
+      { icon: BarChart3, label: "Pricing", value: "$397/seat/mo, multi-seat" },
     ],
   },
   {
