@@ -1,4 +1,4 @@
-# Agent registration & contact — Ed Krystosik
+# auth.md — Agent registration & contact for Ed Krystosik
 
 This document tells AI agents how to interact with edkrystosik.com.
 
