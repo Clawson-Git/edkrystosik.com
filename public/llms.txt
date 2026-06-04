@@ -1,0 +1,27 @@
+# Ed Krystosik
+
+> Builder, founder, and hands-on operator at the intersection of AI, biotech, and
+> business strategy. CAIO at RAC/AI, co-founder of Audity, co-founder of Artana Bio,
+> and Finance Director at the Med13 Foundation. Based in Reno, NV.
+
+## About
+- [Home (Markdown)](https://edkrystosik.com/index.md): full overview of who Ed is, his ventures, and background.
+- [Contact / agent registration](https://edkrystosik.com/auth.md): how to reach Ed and how an agent should identify itself.
+
+## Ventures
+- [Audity](https://auditynow.com/audity-teams): the operating system for boutique AI consulting firms (3-25 people) running multi-seat client work. Ed is co-founder. $397/seat/mo.
+- [RAC/AI](https://racprojects.ai/): AI transformation consulting and advisory for established mid-market businesses ($15K-$50K engagements). Ed is CAIO.
+- Artana Bio: early-stage biotechnology and precision-medicine venture. Ed is co-founder.
+- Med13 Foundation: nonprofit advancing medical research. Ed is Finance Director.
+
+## Writing
+- [Notes](https://edkrystosik.com/notes): working notes on building, AI strategy, and consulting.
+
+## For agents
+- [Agent skills index](https://edkrystosik.com/.well-known/agent-skills/index.json): discoverable capabilities.
+- [MCP server card](https://edkrystosik.com/.well-known/mcp/server-card.json): connect to the read-only MCP server (`/api/mcp`).
+- [A2A agent card](https://edkrystosik.com/.well-known/agent-card.json): talk to the read-only A2A agent (`/api/a2a`).
+- [API catalog](https://edkrystosik.com/.well-known/api-catalog): machine-readable resource index.
+
+## Contact
+- [DM Ed on LinkedIn](https://www.linkedin.com/in/ed-krystosik/): the primary way to start a conversation.

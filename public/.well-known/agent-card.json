@@ -1,0 +1,20 @@
+{
+  "protocolVersion": "0.2.0",
+  "name": "Ed Krystosik Agent",
+  "description": "A read-only agent that answers questions about Ed Krystosik, his ventures (Audity, RAC/AI, Artana Bio, Med13 Foundation), his background, and how to get in touch.",
+  "url": "https://edkrystosik.com/api/a2a",
+  "version": "1.0.0",
+  "provider": { "organization": "Ed Krystosik", "url": "https://edkrystosik.com" },
+  "capabilities": { "streaming": false, "pushNotifications": false },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "ed-qa",
+      "name": "Ed Krystosik Q&A",
+      "description": "Answer questions about Ed Krystosik, his ventures, his background, and how to reach him.",
+      "tags": ["ed-krystosik", "ventures", "audity", "rac-ai", "contact"],
+      "examples": ["What does Ed Krystosik do?", "What is Audity?", "How do I get in touch with Ed?"]
+    }
+  ]
+}

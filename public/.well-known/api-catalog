@@ -1,0 +1,19 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://edkrystosik.com/",
+      "describedby": [
+        { "href": "https://edkrystosik.com/llms.txt", "type": "text/markdown" }
+      ],
+      "service-desc": [
+        { "href": "https://edkrystosik.com/.well-known/mcp/server-card.json", "type": "application/json", "title": "MCP server card" },
+        { "href": "https://edkrystosik.com/.well-known/agent-card.json", "type": "application/json", "title": "A2A agent card" }
+      ],
+      "item": [
+        { "href": "https://edkrystosik.com/.well-known/agent-skills/index.json", "type": "application/json", "title": "Agent Skills index" },
+        { "href": "https://edkrystosik.com/auth.md", "type": "text/markdown", "title": "Agent registration & contact" },
+        { "href": "https://edkrystosik.com/sitemap.xml", "type": "application/xml", "title": "Sitemap" }
+      ]
+    }
+  ]
+}

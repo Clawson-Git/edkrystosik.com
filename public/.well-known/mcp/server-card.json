@@ -1,0 +1,16 @@
+{
+  "name": "edkrystosik-com",
+  "version": "1.0.0",
+  "description": "Read-only MCP server for edkrystosik.com — answers questions about Ed Krystosik, his ventures (Audity, RAC/AI, Artana Bio, Med13 Foundation), his background, and how to get in touch.",
+  "transport": "http",
+  "endpoint": "https://edkrystosik.com/api/mcp",
+  "capabilities": {
+    "tools": {}
+  },
+  "tools": [
+    { "name": "get_overview", "description": "Concise overview of who Ed Krystosik is, what he does, and how to make contact." },
+    { "name": "list_ventures", "description": "List the ventures Ed is involved in (Audity, RAC/AI, Artana Bio, Med13 Foundation) with his role and a one-line description of each." },
+    { "name": "get_contact", "description": "Return the primary way to reach Ed (LinkedIn DM)." }
+  ],
+  "documentation": "https://edkrystosik.com/llms.txt"
+}

@@ -143,6 +143,66 @@ function renderNotFound() {
   });
 }
 
+// --- Agent-readiness: shared business facts (read-only MCP/A2A answer from these) ---
+
+const SITE_FACTS = {
+  overview:
+    "Ed Krystosik — builder, founder, and hands-on operator at the intersection of " +
+    "AI, biotech, and business strategy. CAIO at RAC/AI, co-founder of Audity, " +
+    "co-founder of Artana Bio, and Finance Director at the Med13 Foundation. " +
+    "Based in Reno, NV.",
+  ventures: [
+    {
+      id: "audity",
+      name: "Audity",
+      role: "Co-Founder",
+      description:
+        "The operating system for boutique AI consulting firms (3-25 people) running " +
+        "multi-seat client work. Removes the capacity ceiling that caps most firms at " +
+        "6-8 audits a year. 60%+ time saved. $397/seat/mo, multi-seat.",
+      url: "https://auditynow.com/audity-teams",
+    },
+    {
+      id: "rac-ai",
+      name: "RAC/AI",
+      role: "CAIO",
+      description:
+        "AI transformation consulting and advisory for established mid-market " +
+        "businesses. Hands-on audits, implementation roadmaps, execution partnership. " +
+        "Advisor, not vendor. Engagements typically $15K-$50K.",
+      url: "https://racprojects.ai/",
+    },
+    {
+      id: "artana-bio",
+      name: "Artana Bio",
+      role: "Co-Founder",
+      description:
+        "Early-stage biotechnology venture at the frontier of precision medicine.",
+      url: "https://edkrystosik.com/#ventures",
+    },
+    {
+      id: "med13",
+      name: "Med13 Foundation",
+      role: "Finance Director",
+      description:
+        "Nonprofit advancing medical research; Ed leads financial operations and strategy.",
+      url: "https://edkrystosik.com/#ventures",
+    },
+  ],
+  contact: "DM Ed on LinkedIn: https://www.linkedin.com/in/ed-krystosik/",
+};
+
+const LINK_HEADER = [
+  '</llms.txt>; rel="describedby"; type="text/markdown"',
+  '</index.md>; rel="alternate"; type="text/markdown"',
+  '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+  '</.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"',
+  '</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
+  '</.well-known/agent-skills/index.json>; rel="https://schemas.agentskills.io/discovery"; type="application/json"',
+  '</auth.md>; rel="author"; type="text/markdown"',
+  '</sitemap.xml>; rel="sitemap"; type="application/xml"',
+].join(", ");
+
 // --- Middleware ---
 
 // 1. Apex host redirect (www -> apex). Done before anything else so cached hits still get 301'd.
@@ -152,6 +212,13 @@ app.use((req, res, next) => {
     const target = `https://${host.slice(4)}${req.originalUrl}`;
     return res.redirect(301, target);
   }
+  next();
+});
+
+// 1b. RFC 8288 Link header advertising the agent-readiness discovery surface.
+// Emitted site-wide so any GET/HEAD surfaces the discovery resources.
+app.use((_req, res, next) => {
+  res.setHeader("Link", LINK_HEADER);
   next();
 });
 
@@ -278,6 +345,119 @@ app.delete("/api/notes/:slug", requireAuth, (req, res) => {
   res.json({ deleted: true });
 });
 
+// --- Agent-readiness: read-only MCP endpoint (JSON-RPC over HTTP) ---
+
+const MCP_TOOLS = [
+  {
+    name: "get_overview",
+    description:
+      "Concise overview of who Ed Krystosik is, what he does, and how to make contact.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    annotations: { readOnlyHint: true },
+  },
+  {
+    name: "list_ventures",
+    description:
+      "List the ventures Ed is involved in (Audity, RAC/AI, Artana Bio, Med13 Foundation) " +
+      "with his role and a one-line description of each.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    annotations: { readOnlyHint: true },
+  },
+  {
+    name: "get_contact",
+    description: "Return the primary way to reach Ed (LinkedIn DM).",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    annotations: { readOnlyHint: true },
+  },
+];
+
+function mcpCallTool(name) {
+  switch (name) {
+    case "get_overview":
+      return SITE_FACTS.overview + " " + SITE_FACTS.contact;
+    case "list_ventures":
+      return SITE_FACTS.ventures
+        .map((v) => `${v.name} (${v.role}): ${v.description} More: ${v.url}`)
+        .join("\n");
+    case "get_contact":
+      return SITE_FACTS.contact;
+    default:
+      return null;
+  }
+}
+
+app.post("/api/mcp", (req, res) => {
+  const { id = null, method, params } = req.body || {};
+  const reply = (result) => res.json({ jsonrpc: "2.0", id, result });
+  const fail = (code, message) =>
+    res.json({ jsonrpc: "2.0", id, error: { code, message } });
+
+  if (method === "initialize") {
+    return reply({
+      protocolVersion: "2024-11-05",
+      capabilities: { tools: {} },
+      serverInfo: { name: "edkrystosik-com", version: "1.0.0" },
+    });
+  }
+  if (method === "tools/list") {
+    return reply({ tools: MCP_TOOLS });
+  }
+  if (method === "tools/call") {
+    const name = params && params.name;
+    const text = mcpCallTool(name);
+    if (text === null) return fail(-32602, `Unknown tool: ${name}`);
+    return reply({ content: [{ type: "text", text }] });
+  }
+  return fail(-32601, `Method not found: ${method}`);
+});
+
+// --- Agent-readiness: read-only A2A endpoint ---
+
+app.post("/api/a2a", (req, res) => {
+  const { id = null, method, params } = req.body || {};
+  if (method && method !== "message/send") {
+    return res.json({
+      jsonrpc: "2.0",
+      id,
+      error: { code: -32601, message: `Method not found: ${method}` },
+    });
+  }
+
+  // Pull the user's text from an A2A message/send envelope (best-effort).
+  const parts = (params && params.message && params.message.parts) || [];
+  const userText = parts
+    .map((p) => (typeof p === "string" ? p : p && p.text) || "")
+    .join(" ")
+    .toLowerCase();
+
+  let answer;
+  if (/venture|audity|rac|artana|med13|company|companies|building|work/.test(userText)) {
+    answer =
+      SITE_FACTS.ventures
+        .map((v) => `${v.name} (${v.role}): ${v.description}`)
+        .join("\n") +
+      "\n" +
+      SITE_FACTS.contact;
+  } else if (/contact|reach|email|book|linkedin|get in touch/.test(userText)) {
+    answer = SITE_FACTS.contact;
+  } else {
+    answer = SITE_FACTS.overview + " " + SITE_FACTS.contact;
+  }
+
+  const message = {
+    role: "agent",
+    parts: [{ kind: "text", text: answer }],
+    messageId: crypto.randomUUID(),
+    kind: "message",
+  };
+
+  // JSON-RPC envelope when called as RPC, bare message otherwise.
+  if (method === "message/send") {
+    return res.json({ jsonrpc: "2.0", id, result: message });
+  }
+  return res.json(message);
+});
+
 // --- Sitemap ---
 
 app.get("/sitemap.xml", (_req, res) => {
@@ -319,7 +499,22 @@ ${urls.join("\n")}
 // --- SEO meta injection routes (before static files + SPA catch-all) ---
 
 // Homepage: /
-app.get("/", (_req, res) => {
+app.get("/", (req, res) => {
+  // Markdown content negotiation: agents sending `Accept: text/markdown` get the
+  // Markdown sibling; browsers (Accept: text/html) fall through to the SPA.
+  const accept = req.headers.accept || "";
+  if (accept.includes("text/markdown")) {
+    res.set({
+      "Content-Type": "text/markdown; charset=utf-8",
+      "Content-Location": "/index.md",
+      Vary: "Accept",
+      "Cache-Control": "no-store",
+    });
+    return res.sendFile(join(__dirname, "dist", "index.md"), (err) => {
+      if (err) res.status(404).send("# Not found\n");
+    });
+  }
+
   if (!INDEX_HTML_TEMPLATE) {
     return res.sendFile(indexHtmlPath);
   }
@@ -473,9 +668,17 @@ app.use(
 app.use(
   express.static(join(__dirname, "dist"), {
     maxAge: "1h",
+    // Serve the agent-readiness discovery files under /.well-known (a dot-dir).
+    dotfiles: "allow",
     setHeaders(res, path) {
       if (path.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
+      }
+      // Agent-readiness: send/express.static doesn't know these types.
+      if (path.endsWith(".md") || path.endsWith("/llms.txt")) {
+        res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+      } else if (path.endsWith("/api-catalog")) {
+        res.setHeader("Content-Type", "application/linkset+json; charset=utf-8");
       }
     },
   })
