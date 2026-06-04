@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/index.json",
+  "version": "0.2.0",
+  "provider": { "name": "Ed Krystosik", "url": "https://edkrystosik.com" },
+  "skills": [
+    {
+      "name": "Audity",
+      "type": "service",
+      "description": "The operating system for boutique AI consulting firms (3-25 people) running multi-seat client work. Co-founded by Ed Krystosik.",
+      "url": "https://edkrystosik.com/.well-known/agent-skills/audity/SKILL.md",
+      "digest": "sha256:dc04d66e490143e739f0ecf590ed41ae266a64f1cf59368dc21a2d2fb41c9313"
+    },
+    {
+      "name": "AI Transformation Audit (RAC/AI)",
+      "type": "service",
+      "description": "Hands-on AI transformation audits and advisory for established mid-market businesses. Diagnosis, roadmap, and execution introductions.",
+      "url": "https://edkrystosik.com/.well-known/agent-skills/ai-transformation-audit/SKILL.md",
+      "digest": "sha256:9c7aa95988d8fcb3d140f29ddf317aa059d0bc423bf07df54c89ec3ab7ac42dd"
+    }
+  ]
+}
