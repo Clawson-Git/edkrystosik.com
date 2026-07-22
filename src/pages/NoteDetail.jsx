@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { marked } from "marked";
 import NewsletterCTA from "../components/NewsletterCTA";
+import CommunityCTA from "../components/CommunityCTA";
 
 function formatDate(iso) {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
@@ -106,6 +107,7 @@ export default function NoteDetail() {
           />
 
           <NewsletterCTA />
+          <CommunityCTA />
         </motion.div>
       </div>
     </section>
